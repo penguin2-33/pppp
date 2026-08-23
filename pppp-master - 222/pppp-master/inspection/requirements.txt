@@ -1,0 +1,30 @@
+# 工业配电房智能巡检 - Python 依赖
+# 安装：pip install -r requirements.txt
+#
+# M1 阶段（最小闭环）必需：
+numpy
+opencv-python
+coppeliasim-zmqremoteapi-client
+#
+# M3+ 阶段（目标识别/OCR）按需追加：
+# ultralytics          # YOLOv8 目标检测
+# paddleocr            # 电柜编号文字识别
+# paddlepaddle         # PaddleOCR 后端
+# torch                # YOLO 推理后端（随 ultralytics 自动装）
+
+M3
+ultralytics：YOLOv8 目标检测（识别箱体、变压器等）
+
+paddleocr：文字识别（识别编号牌）
+
+paddlepaddle：PaddleOCR 的运行底层框架
+
+opencv-python：图像处理和保存画框图片
+
+pip install ultralytics paddleocr paddlepaddle opencv-python
+
+有‘[警告] OCR 识别异常: (Unimplemented) ConvertPirAttribute2RuntimeAttribute not support [pir::ArrayAttribute<pir::DoubleAttribute>] (at ..\paddle\fluid\framework\new_executor\instruction\onednn\onednn_instruction.cc:118)’错误
+这个错误是 PaddlePaddle 和 PaddleOCR 版本之间不兼容导致的
+如果你想彻底修好它
+请在终端里运行这句命令降级（降级后完美兼容，绝对不报错）：
+pip install paddleocr==2.7.0.3 paddlepaddle==2.6.1 -i https://pypi.tuna.tsinghua.edu.cn/simple
