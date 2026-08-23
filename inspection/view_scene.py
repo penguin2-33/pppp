@@ -11,7 +11,7 @@ sim.stopSimulation()
 
 # 2. 复位机器人到起点
 robot = sim.getObject("/P3DX")
-sim.setObjectPosition(robot, -1, [-2.0, -1.0, 0.2])
+sim.setObjectPosition(robot, -1, [-2.0, 1.0, 0.2])
 sim.setObjectOrientation(robot, -1, [0.0, 0.0, 0.0])
 for p in ["/P3DX/leftMotor", "/P3DX/rightMotor"]:
     sim.setJointPosition(sim.getObject(p), 0.0)
@@ -24,9 +24,9 @@ for o in sim.getObjectsInTree(sim.handle_scene, sim.handle_all):
         break
 
 if cam is not None:
-    # 相机放到场景斜前方，看向场景中心 (3, -0.3, 0.9)
-    P = (3.0, -5.0, 3.2)
-    T = (3.0, -0.3, 0.9)
+    # 相机放到房间斜前方，看向房间中心 (2.0, 0.0, 1.2)
+    P = (2.0, -4.5, 3.2)
+    T = (2.0, 0.0, 1.2)
     dx, dy, dz = T[0] - P[0], T[1] - P[1], T[2] - P[2]
     L = math.sqrt(dx * dx + dy * dy + dz * dz)
     dx, dy, dz = dx / L, dy / L, dz / L

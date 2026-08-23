@@ -42,46 +42,60 @@ SCENE_SAVE_PATH = r"D:\inspection_scene.ttt"
 # 设备沿 X 轴排成一排（Y=0，靠墙），机器人在 Y=-1.0 的通道行进，+X 为机器人前进方向
 # 机器人在 waypoint 处停靠后，整体转向设备侧（−Y 反方向，即朝 +Y 看向设备）
 LAYOUT = {
-    "robot_start": (-2.0, -1.0, 0.2),   # 抬高起始高度，避免初始嵌入地板被物理引擎弹穿
+    # 房间：地面 12m(X)×6m(Y)，X∈[-4,8]，Y∈[-3,3]；设备靠后墙(y=2.6)，机器人沿 y=1.0 通道行进
+    "robot_start": (-2.0, 1.0, 0.2),   # 抬高起始高度，避免初始嵌入地板被物理引擎弹穿
     "waypoints": {
-        "waypoint_01": (0.0, -1.0, 0.0),    # 看 cabinet_01
-        "waypoint_02": (4.5, -1.0, 0.0),    # 看仪表+指示灯
-        "waypoint_03": (6.5, -1.0, 0.0),    # 看标识+开关
+        "waypoint_01": (0.0, 1.0, 0.0),    # 看 cabinet_01（按钮/开关）
+        "waypoint_02": (1.6, 1.0, 0.0),    # 看 cabinet_02（仪表）
+        "waypoint_03": (3.2, 1.0, 0.0),    # 看 cabinet_03（指示灯）
     },
-    # 注意：M2 阶段会让机器人在 waypoint 处转向设备（绕 Z 转 -π/2，朝 +Y 方向），
-    # 此时相机视野（默认 +X 方向）也将被云台旋转到 +Y，自动正对设备。
-    # 此处保持设备沿 +X 排开，便于按顺序巡检。
-    # 3 个配电柜主体（设备沿 +X 排开，柜体中心 y=0）
+    # 3 个配电柜主体（靠房间后墙，柜体中心 y=2.6）
     "cabinets": {
-        "cabinet_01": (0.0, 0.0, 0.8),    # 进线柜：编号牌 + 开关
-        "cabinet_02": (1.6, 0.0, 0.8),    # 仪表柜：编号牌 + 指针仪表
-        "cabinet_03": (3.2, 0.0, 0.8),    # 指示柜：编号牌 + 绿灯 + 红灯
+        "cabinet_01": (0.0, 2.6, 0.8),    # 进线柜：编号牌 + 按钮 + 开关
+        "cabinet_02": (1.6, 2.6, 0.8),    # 仪表柜：编号牌 + 指针仪表
+        "cabinet_03": (3.2, 2.6, 0.8),    # 指示柜：编号牌 + 3绿灯 + 红灯
     },
-    # 警示标识：挂在背墙（独立对象，不在柜子上）
-    "sign_pos": (2.8, 0.62, 1.2),         # 背墙正前方（背墙在 x=2.8, y=0.7）
-    "targets": {
-        # 以下仅为兼容保留（config.py 的 TARGETS 引用），实际对象改为柜子子对象
-        "meter_01":   (1.6, 0.0, 0.8),    # 已挂到 cabinet_02
-        "lamp_green": (3.2, 0.0, 0.8),    # 已挂到 cabinet_03
-        "lamp_red":   (3.2, 0.0, 0.8),    # 已挂到 cabinet_03
-        "sign_01":    (2.8, 0.62, 1.2),   # 挂背墙
-        "switch_01":  (0.0, 0.0, 0.8),    # 已挂到 cabinet_01
+    # 变压器（靠后墙，大设备）
+    "transformer": (5.3, 2.6, 0.7),
+    # 母线桥架（天花板下，沿设备方向）
+    "bus_duct": (2.75, 2.6, 2.35),
+    # 灭火器（通道远侧靠墙，2 个红色罐体）
+    "fire_extinguishers": [
+        (-2.5, 0.0, 0.2),
+        (6.5, 0.0, 0.2),
+    ],
+    # 安全标识（挂墙，多种类型）
+    "signs": {
+        "sign_01":         (1.0, 2.85, 2.1),   # 黄色警示（黑边斜杠）
+        "sign_highvoltage":(2.0, 2.85, 2.1),   # 高压危险（黄底黑闪电）
+        "sign_no_fire":    (3.0, 2.85, 2.1),   # 禁止烟火（白底红圈斜杠）
+        "sign_ground":     (4.0, 2.85, 2.1),   # 必须接地（蓝底）
+        "sign_exit":       (7.85, 0.5, 2.1),   # 安全出口（绿底，右墙内侧）
     },
     "obstacles": {
-        "obstacle_01": (2.4, -1.0, 0.25),   # 静态障碍（通道上，需绕行）
-        "obstacle_02": (8.0, 0.5, 0.25),    # 动态障碍（备用位置）
+        "obstacle_01": (2.4, 1.0, 0.25),   # 静态障碍（通道上，需绕行）
+        "obstacle_02": (6.8, 0.3, 0.25),   # 静态障碍（备用）
     },
-    "back_wall": (2.8, 0.7, 1.1),           # 设备背墙（配电房墙面感）
-    # 地板：足够大，覆盖机器人活动范围 X∈[-3,9] Y∈[-2.5,1.5]，避免小车驶出边界坠落
+    # 房间结构（后墙 + 左右墙，正面敞开便于展示；墙厚 0.1、高 2.8）
+    "room": {
+        "back_wall":    {"pos": (2.0, 2.95, 1.4), "size": (12.0, 0.1, 2.8)},
+        "left_wall":    {"pos": (-3.95, 0.0, 1.4), "size": (0.1, 6.0, 2.8)},
+        "right_wall":   {"pos": (7.95, 0.0, 1.4), "size": (0.1, 6.0, 2.8)},
+    },
+    # 地板：12m × 6m，覆盖整个房间
     "floor": {
-        "pos": (3.0, -0.5, -0.05),          # 地板中心（z=-0.05 使顶面在 z=0）
-        "size": (12.0, 4.0, 0.1),           # 长(X) 12m × 宽(Y) 4m × 厚 0.1m
+        "pos": (2.0, 0.0, -0.05),          # 地板中心（z=-0.05 使顶面在 z=0）
+        "size": (12.0, 6.0, 0.1),          # 长(X) 12m × 宽(Y) 6m × 厚 0.1m
     },
-    # 通道边界黄线（沿 X 两条，标出巡检通道：y=-0.45 近设备侧 / y=-1.55 远侧）
+    # 通道边界黄线（巡检通道：y=1.6 近设备 / y=0.3 远侧）
     "corridor_lines": [
-        {"name": "corridor_line_near", "pos": (2.75, -0.45, 0.005), "size": (9.5, 0.05, 0.01)},
-        {"name": "corridor_line_far",  "pos": (2.75, -1.55, 0.005), "size": (9.5, 0.05, 0.01)},
+        {"name": "corridor_line_near", "pos": (2.0, 1.6, 0.005), "size": (8.5, 0.05, 0.01)},
+        {"name": "corridor_line_far",  "pos": (2.0, 0.3, 0.005), "size": (8.5, 0.05, 0.01)},
     ],
+    # 黄黑警示带（设备前地面，交替黄黑段）
+    "warning_strip": {"y": 2.25, "x_start": -0.6, "x_end": 6.2, "width": 0.14},
+    # 绝缘垫（设备前操作区，绿色橡胶垫）
+    "insulation_mat": {"pos": (2.8, 1.85, 0.005), "size": (6.8, 0.6, 0.015)},
 }
 
 COLORS = {
@@ -98,13 +112,23 @@ COLORS = {
     "switch":        (0.20, 0.20, 0.25),   # 开关主体深色
     "switch_indicator": (0.95, 0.95, 0.10), # 开关指示线亮黄
     "obstacle":      (0.20, 0.45, 0.80),
-    "wall":          (0.55, 0.55, 0.60),
-    "floor":         (0.75, 0.75, 0.78),   # 浅灰地板（配电房水泥地面感）
+    "wall":          (0.72, 0.72, 0.75),
+    "floor":         (0.70, 0.70, 0.73),   # 水泥地面
     "lamp_off":      (0.22, 0.22, 0.25),   # 熄灭的指示灯（暗色灯罩，状态判读用）
     "door_seam":     (0.12, 0.12, 0.15),   # 柜门缝
     "handle":        (0.70, 0.70, 0.74),   # 柜门把手（金属）
     "grille":        (0.10, 0.10, 0.12),   # 散热格栅
     "yellow_line":   (0.90, 0.82, 0.10),   # 通道边界黄线
+    # v4 新增：房间/设备/地面
+    "transformer":   (0.22, 0.36, 0.28),   # 变压器深绿
+    "metal":         (0.62, 0.62, 0.66),   # 金属（母线桥架）
+    "fire_ext":      (0.85, 0.10, 0.08),   # 灭火器红
+    "insulation":    (0.15, 0.45, 0.20),   # 绝缘垫深绿
+    "window":        (0.10, 0.16, 0.28),   # 柜门观察窗玻璃（深蓝）
+    "door_color":    (0.45, 0.38, 0.30),   # 房门（深棕）
+    "sign_blue":     (0.10, 0.30, 0.70),   # 必须接地标识蓝底
+    "sign_exit_green": (0.10, 0.60, 0.25), # 安全出口标识绿底
+    "white":         (0.95, 0.95, 0.95),   # 白
 }
 
 
@@ -281,17 +305,29 @@ def main():
         print(f"  [警告] 创建 proxFront 失败: {e}")
         manual_todo.append("proxFront（菜单 Add > Proximity sensor > Cone type）")
 
-    # ============ 5. 地板 + 背墙 ============
-    print("[环境]")
-    # 地板：自建大地板（12m × 4m），覆盖机器人活动范围，取代默认 5×5m 小 Floor
+    # ============ 5. 房间结构：地板 + 三面墙（后+左右，正面敞开）+ 地面细节 ============
+    print("[房间]")
+    # 地板（12m × 6m，覆盖整个房间）
     fl = LAYOUT["floor"]
     make_cuboid("floor", fl["pos"], fl["size"], COLORS["floor"])
-    # 背墙
-    make_cuboid("back_wall", LAYOUT["back_wall"], [9.0, 0.15, 2.2], COLORS["wall"])
+    # 三面墙（respondable，机器人不能穿墙）
+    for wname, w in LAYOUT["room"].items():
+        make_cuboid(wname, w["pos"], w["size"], COLORS["wall"])
     # 通道边界黄线（视觉标线，非碰撞体，避免机器人撞线）
     print("[通道标线]")
     for ln in LAYOUT["corridor_lines"]:
         make_cuboid(ln["name"], ln["pos"], ln["size"], COLORS["yellow_line"], respondable=False)
+    # 黄黑警示带（设备前地面，交替黄黑段）
+    ws = LAYOUT["warning_strip"]
+    seg = 0.3
+    n = int((ws["x_end"] - ws["x_start"]) / seg) + 1
+    for i in range(n):
+        cx = ws["x_start"] + i * seg + seg / 2.0
+        color = COLORS["yellow_line"] if i % 2 == 0 else COLORS["sign_black"]
+        make_cuboid(f"warnstrip_{i}", [cx, ws["y"], 0.005], [seg, ws["width"], 0.01], color, respondable=False)
+    # 绝缘垫（设备前操作区，绿色橡胶垫）
+    im = LAYOUT["insulation_mat"]
+    make_cuboid("insulation_mat", im["pos"], im["size"], COLORS["insulation"], respondable=False)
 
     # ============ 6. 巡检点位 ============
     print("[巡检点位]")
@@ -340,6 +376,9 @@ def main():
         # 柜顶警示条：顶部一条黄黑相间色带
         make_cuboid(name + "_warnstripe", [0.0, -0.007, 0.67], [0.74, 0.002, 0.03],
                     COLORS["yellow_line"], respondable=False, parent=panel)
+        # 柜门观察窗：深色玻璃（编号牌下方，中上部）
+        make_cuboid(name + "_window", [0.0, -0.008, 0.0], [0.5, 0.002, 0.18],
+                    COLORS["window"], respondable=False, parent=panel)
 
     # 7.2 指针仪表 meter_01 —— 装在 cabinet_02 面板中央（电压表/电流表样式）
     # 简化设计：白色表盘（dial）+ 12 个深色刻度块（直接贴表面）+ 红色指针 + 黑轴帽
@@ -371,31 +410,45 @@ def main():
     make_sphere("meter_01_axis", [0.0, 0.0, 0.025], 0.020, COLORS["cabinet"],
                 respondable=False, parent=dial)
 
-    # 7.3 指示灯 —— 装在 cabinet_03 面板上（一排：3 绿运行 + 1 红告警，真实配电柜风格）
-    # 把指示灯放在柜子面板中上部，水平排开（沿柜子 +X 方向），靠左避免和右侧编号牌冲突
-    # 注意：柜子前面板法线朝 -y，灯的位置在柜子局部坐标 (x, y, z) 中 y 朝通道（-y）
-    # 但柜子坐标系是默认：x=左右（=世界 x），y=前后（柜子 +y 朝背墙 = 世界 +y），z=上下
-    # 等等：cabinet 主体未被旋转，所以柜子局部坐标系 = 世界坐标系（除了平移到柜子中心）
-    # 柜子中心世界 (3.2, 0, 0.8)，灯的相对位置 (lx, ly, lz) 加到中心
-    # ly 应该是 -0.215（贴面板外表面，朝通道）
-    cab3 = cab_handles["cabinet_03"]
-    # 灯排布：4 个灯沿柜子局部 +X 方向排开（=世界 +X），间距 0.20m
-    # 中心在 (0, FACE_OFF, 0.45)（柜子面板上部），灯占柜子宽度 0.6m
-    lamp_y = FACE_OFF
-    lamp_z = 0.45
-    lamp_specs = [
-        ("lamp_green_1", -0.30, lamp_y, lamp_z, COLORS["green"]),     # 回路1运行（亮）
-        ("lamp_green_2", -0.10, lamp_y, lamp_z, COLORS["lamp_off"]),  # 回路2停止（灭，状态判读用）
-        ("lamp_green_3",  0.10, lamp_y, lamp_z, COLORS["green"]),     # 回路3运行（亮）
-        ("lamp_red",      0.30, lamp_y, lamp_z, COLORS["red"]),       # 故障告警（亮 = 异常）
-    ]
-    for name, lx, ly, lz, color in lamp_specs:
-        # 底座小圆柱（贴面板）
+    # 7.3 指示灯 —— 分布在 3 个柜子，用「真实灯光组件」模拟亮灭
+    # 可见灯罩球体 + 复制默认点光源（亮=发光，灭=不发光）；自发光让灯球"点亮"
+    light_template = None
+    for o in sim.getObjectsInTree(sim.handle_scene, sim.handle_all):
+        if sim.getObjectName(o) == "DefaultLightA":
+            light_template = o
+            break
+
+    def make_lamp(cab, name, lx, lz, color, lit):
+        """在柜子面板装一个指示灯：底座 + 灯球(亮则自发光) + 低强度点光源"""
+        ly = FACE_OFF
         make_cylinder(name + "_base", [lx, ly, lz], [0.05, 0.05, 0.02], COLORS["switch"],
-                      respondable=False, parent=cab3)
-        # 灯球（从底座再向通道突出）
-        make_sphere(name, [lx, ly - 0.035, lz], 0.08, color,
-                    respondable=False, parent=cab3)
+                      respondable=False, parent=cab)
+        bulb = make_sphere(name, [lx, ly - 0.035, lz], 0.08, color,
+                           respondable=False, parent=cab)
+        if lit:
+            # 自发光（emission）：让灯球本身看起来"点亮"，不产生全局光照
+            try:
+                sim.setShapeColor(bulb, "", getattr(sim, "colorcomponent_emission", 2), list(color))
+            except Exception:
+                pass
+            if light_template is not None:
+                try:
+                    lh = sim.copyPasteObjects([light_template], 0)[0]
+                    set_name_alias(lh, name + "_light")
+                    sim.setObjectParent(lh, cab, True)
+                    sim.setObjectPosition(lh, cab, [lx, ly - 0.06, lz])
+                    dim = [c * 0.06 for c in color]   # 强度降到 6%
+                    sim.setLightParameters(lh, 1, None, dim, dim)
+                except Exception as e:
+                    print(f"  [警告] 创建 {name} 光源失败: {e}")
+
+    # 各柜指示灯布局：
+    #   cabinet_01 电源指示(亮) / cabinet_02 工作指示(亮)
+    #   cabinet_03 回路运行(灭，状态判读) + 故障告警(亮，异常)
+    make_lamp(cab_handles["cabinet_01"], "lamp_green_1", 0.0, 0.15, COLORS["green"], True)
+    make_lamp(cab_handles["cabinet_02"], "lamp_green_2", 0.0, -0.45, COLORS["green"], True)
+    make_lamp(cab_handles["cabinet_03"], "lamp_green_3", -0.12, 0.45, COLORS["lamp_off"], False)
+    make_lamp(cab_handles["cabinet_03"], "lamp_red", 0.12, 0.45, COLORS["red"], True)
 
     # 7.4 按钮 —— 装在 cabinet_01 面板上（绿色"启动" + 红色"停止"）
     cab1 = cab_handles["cabinet_01"]
@@ -413,8 +466,12 @@ def main():
     make_cuboid("switch_01_indicator", [-0.03, -0.05, 0.0], [0.06, 0.004, 0.015], COLORS["switch_indicator"],
                 respondable=False, parent=sw)
 
-    # 7.5 警示标识 sign_01 —— 单独挂背墙（安全警示牌）
-    sp = LAYOUT["sign_pos"]
+    # 7.5 安全标识阵列 —— 挂墙，多种类型（黄警示/高压/禁止烟火/接地/安全出口）
+    print("[安全标识]")
+    signs_cfg = LAYOUT["signs"]
+
+    # 黄色警示牌 sign_01（黑边 + 斜杠）
+    sp = signs_cfg["sign_01"]
     sign = make_cuboid("sign_01", sp, [0.30, 0.03, 0.30], COLORS["sign_yellow"])
     for label, relpos, size in [
         ("top",    [0.0,  -0.02,  0.13], [0.30, 0.005, 0.04]),
@@ -427,6 +484,62 @@ def main():
     slash = make_cuboid("sign_01_slash", [0.0, -0.02, 0.0], [0.30, 0.005, 0.04], COLORS["sign_black"],
                         respondable=False, parent=sign)
     sim.setObjectOrientation(slash, sign, [0.0, 0.0, math.pi / 4.0])
+
+    # 高压危险 sign_highvoltage（黄底 + 黑色闪电）
+    sp = signs_cfg["sign_highvoltage"]
+    hv = make_cuboid("sign_highvoltage", sp, [0.30, 0.03, 0.30], COLORS["sign_yellow"])
+    bolt = make_cuboid("sign_highvoltage_bolt", [0.0, -0.02, 0.0], [0.08, 0.005, 0.22], COLORS["sign_black"],
+                       respondable=False, parent=hv)
+    sim.setObjectOrientation(bolt, hv, [0.0, 0.0, math.pi / 4.0])
+
+    # 禁止烟火 sign_no_fire（白底 + 红边框 + 红斜杠）
+    sp = signs_cfg["sign_no_fire"]
+    nf = make_cuboid("sign_no_fire", sp, [0.30, 0.03, 0.30], COLORS["white"])
+    for label, relpos, size in [
+        ("top",    [0.0,  -0.02,  0.13], [0.30, 0.005, 0.03]),
+        ("bottom", [0.0,  -0.02, -0.13], [0.30, 0.005, 0.03]),
+        ("left",   [-0.13, -0.02, 0.0],  [0.03, 0.005, 0.26]),
+        ("right",  [ 0.13, -0.02, 0.0],  [0.03, 0.005, 0.26]),
+    ]:
+        make_cuboid(f"sign_no_fire_border_{label}", relpos, size, COLORS["red"],
+                    respondable=False, parent=nf)
+    nf_slash = make_cuboid("sign_no_fire_slash", [0.0, -0.02, 0.0], [0.30, 0.005, 0.03], COLORS["red"],
+                           respondable=False, parent=nf)
+    sim.setObjectOrientation(nf_slash, nf, [0.0, 0.0, math.pi / 4.0])
+
+    # 必须接地 sign_ground（蓝底 + 白色接地横线）
+    sp = signs_cfg["sign_ground"]
+    gd = make_cuboid("sign_ground", sp, [0.30, 0.03, 0.30], COLORS["sign_blue"])
+    for gi, gz in enumerate([-0.08, 0.0, 0.08]):
+        make_cuboid(f"sign_ground_line_{gi}", [0.0, -0.02, gz], [0.18, 0.005, 0.02], COLORS["white"],
+                    respondable=False, parent=gd)
+
+    # 安全出口 sign_exit（绿底 + 白色箭头，右墙内侧，绕 Z 转 90° 面向房间内）
+    sp = signs_cfg["sign_exit"]
+    ex = make_cuboid("sign_exit", sp, [0.34, 0.03, 0.16], COLORS["sign_exit_green"])
+    sim.setObjectOrientation(ex, -1, [0.0, 0.0, math.pi / 2.0])
+    make_cuboid("sign_exit_arrow", [0.06, -0.02, 0.0], [0.16, 0.005, 0.04], COLORS["white"],
+                respondable=False, parent=ex)
+    make_cuboid("sign_exit_arrow_head", [0.14, -0.02, 0.0], [0.05, 0.005, 0.05], COLORS["white"],
+                respondable=False, parent=ex)
+
+    # 7.6 典型设备扩充：变压器 + 母线桥架 + 灭火器
+    print("[典型设备]")
+    # 变压器（靠后墙大设备 + 散热鳍片 + 警示标签）
+    tp = LAYOUT["transformer"]
+    tf = make_cuboid("transformer", tp, [0.9, 0.6, 1.4], COLORS["transformer"])
+    for fi in range(4):
+        make_cuboid(f"transformer_fin_{fi}", [-0.3 + fi * 0.2, -0.31, 0.0], [0.03, 0.02, 1.2],
+                    COLORS["metal"], respondable=False, parent=tf)
+    make_cuboid("transformer_label", [0.0, -0.31, 0.4], [0.4, 0.005, 0.25], COLORS["sign_yellow"],
+                respondable=False, parent=tf)
+    # 母线桥架（天花板下金属槽）
+    bd = LAYOUT["bus_duct"]
+    make_cuboid("bus_duct", bd, [5.5, 0.3, 0.15], COLORS["metal"])
+    # 灭火器（红色罐体 + 顶部喷口）
+    for i, fe in enumerate(LAYOUT["fire_extinguishers"], start=1):
+        make_cylinder(f"fire_ext_{i:02d}", fe, [0.12, 0.12, 0.4], COLORS["fire_ext"])
+        make_cuboid(f"fire_ext_{i:02d}_nozzle", [fe[0], fe[1], fe[2] + 0.22], [0.05, 0.05, 0.06], COLORS["metal"])
 
     # ============ 8. 障碍物 ============
     print("[障碍物]")

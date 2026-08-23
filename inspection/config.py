@@ -26,14 +26,17 @@ TARGETS = {
     "cabinet": ["/cabinet_01", "/cabinet_02", "/cabinet_03"],   # 配电柜（主体）
     "meter":   ["/cabinet_02/meter_01"],                        # 指针仪表（装在 cabinet_02 面板）
     # 指示灯：一排 3 绿（运行）+ 1 红（告警），真实配电柜风格
-    "lamp_green": ["/cabinet_03/lamp_green_1",
-                   "/cabinet_03/lamp_green_2",
+    "lamp_green": ["/cabinet_01/lamp_green_1",
+                   "/cabinet_02/lamp_green_2",
                    "/cabinet_03/lamp_green_3"],
     "lamp_red":   ["/cabinet_03/lamp_red"],                     # 红色告警灯
-    "sign":   ["/sign_01"],                                     # 安全警示标识（挂背墙）
+    "sign":   ["/sign_01", "/sign_highvoltage", "/sign_no_fire",
+               "/sign_ground", "/sign_exit"],                   # 安全标识阵列（5 种）
     # 按钮：绿色启动 + 红色停止；旋钮开关
     "button": ["/cabinet_01/btn_start", "/cabinet_01/btn_stop"],
     "switch": ["/cabinet_01/switch_01"],                        # 旋钮开关（装在 cabinet_01）
+    "transformer": ["/transformer"],                            # 变压器（靠后墙）
+    "fire_ext": ["/fire_ext_01", "/fire_ext_02"],               # 灭火器（红色罐体）
     "obstacle": ["/obstacle_01", "/obstacle_02"],               # 通道障碍物
 }
 
