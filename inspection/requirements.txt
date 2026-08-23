@@ -1,0 +1,13 @@
+# 工业配电房智能巡检 - Python 依赖
+# 安装：pip install -r requirements.txt
+#
+# M1 阶段（最小闭环）必需：
+numpy
+opencv-python
+coppeliasim-zmqremoteapi-client
+#
+# M3+ 阶段（目标识别/OCR）按需追加：
+# ultralytics          # YOLOv8 目标检测
+# paddleocr            # 电柜编号文字识别
+# paddlepaddle         # PaddleOCR 后端
+# torch                # YOLO 推理后端（随 ultralytics 自动装）
