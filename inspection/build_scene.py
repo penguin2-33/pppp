@@ -445,8 +445,8 @@ def main():
     # 各柜指示灯布局：
     #   cabinet_01 电源指示(亮) / cabinet_02 工作指示(亮)
     #   cabinet_03 回路运行(灭，状态判读) + 故障告警(亮，异常)
-    make_lamp(cab_handles["cabinet_01"], "lamp_green_1", 0.0, 0.15, COLORS["green"], True)
-    make_lamp(cab_handles["cabinet_02"], "lamp_green_2", 0.0, -0.45, COLORS["green"], True)
+    make_lamp(cab_handles["cabinet_01"], "lamp_green_1", 0.0, 0.45, COLORS["green"], True)
+    make_lamp(cab_handles["cabinet_02"], "lamp_green_2", 0.0, 0.45, COLORS["green"], True)
     make_lamp(cab_handles["cabinet_03"], "lamp_green_3", -0.12, 0.45, COLORS["lamp_off"], False)
     make_lamp(cab_handles["cabinet_03"], "lamp_red", 0.12, 0.45, COLORS["red"], True)
 
